@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -20,16 +19,6 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		Message: "Welcome",
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	responseJSON, err := json.Marshal(status)
-
-	if err != nil {
-		http.Error(w, "Failed to generate response JSON", http.StatusInternalServerError)
-		return
-	}
-
-	w.Write(responseJSON)
+	JSONResponse(w, 200, status)
 
 }

@@ -26,6 +26,7 @@ func main() {
 		log.Fatal("PORT not set in .env")
 	}
 
+	log.Printf("Server starting on port: %v", port)
 	err := http.ListenAndServe(":"+port, api.Init())
 
 	if err != nil {
