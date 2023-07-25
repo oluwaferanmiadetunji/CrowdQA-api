@@ -18,3 +18,9 @@ github.com/joho/godotenv
 github.com/lib/pq
 github.com/lib/pq/oid
 github.com/lib/pq/scram
+# github.com/pressly/goose/v3 v3.13.4
+## explicit; go 1.18
+github.com/pressly/goose/v3
+github.com/pressly/goose/v3/internal/dialect
+github.com/pressly/goose/v3/internal/dialect/dialectquery
+github.com/pressly/goose/v3/internal/sqlparser
