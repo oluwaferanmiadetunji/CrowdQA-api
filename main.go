@@ -6,9 +6,12 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gorilla/mux"
 	"github.com/ichtrojan/thoth"
 	"github.com/joho/godotenv"
-	"github.com/oluwaferanmiadetunji/CrowdQA-api/api"
+	_ "github.com/lib/pq"
+	"github.com/oluwaferanmiadetunji/CrowdQA-api/api/users"
+	"github.com/oluwaferanmiadetunji/CrowdQA-api/internal/utils"
 )
 
 func main() {
@@ -26,11 +29,21 @@ func main() {
 		log.Fatal("PORT not set in .env")
 	}
 
-	log.Printf("Server starting on port: %v", port)
-	err := http.ListenAndServe(":"+port, api.Init())
+	route := mux.NewRouter()
+	users.UserRoutes(route)
 
-	if err != nil {
-		log.Fatal(err)
+	route.HandleFunc("/", Home).Methods("GET")
+
+	log.Printf("Server starting on port: %v", port)
+	http.ListenAndServe(":"+port, route)
+
+}
+
+func Home(w http.ResponseWriter, r *http.Request) {
+	status := utils.Response{
+		Message: "Welcome",
 	}
+
+	utils.JSONResponse(w, 200, status)
 
 }

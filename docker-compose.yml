@@ -11,51 +11,16 @@ services:
     restart: on-failure
     volumes:
       - ./:/app
-    depends_on:
-      - mysql 
+    env_file: .env
+    
     networks:
       - crowd-qa-api
     
-
-  mysql:
-    platform: linux/x86_64
-    image: mysql:5.7
-    container_name: mysql
-    ports: 
-      - 3306:3306
-    environment:
-      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
-      MYSQL_ROOT_HOST: '${DB_HOST}'
-      MYSQL_DATABASE: '${DB_NAME}'
-      MYSQL_USER: '${DB_USER}'
-      MYSQL_PASSWORD: '${DB_PASSWORD}'
-      MYSQL_ALLOW_EMPTY_PASSWORD: 1
-            
-    volumes:
-      - database_mysql:/var/lib/mysql
-    networks:
-      - crowd-qa-api
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
-    depends_on:
-      - mysql
-    environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306
-      PMA_ARBITRARY: 1
-      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
-      MYSQL_USER: '${DB_USER}'
-    ports:
-      - 9090:80
-    restart: always
-    networks:
-      - crowd-qa-api
+  
 
 volumes:
   api:            
-  database_mysql:                  
+             
 
 networks:
   crowd-qa-api:
