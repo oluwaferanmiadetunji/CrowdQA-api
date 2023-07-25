@@ -38,13 +38,20 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	existingUser, _ := apiCfg.DB.GetUserByEmail(r.Context(), params.Email)
+
+	if existingUser.Email != "" {
+		utils.ErrorResponse(w, 409, "Account already created!")
+		return
+	}
+
 	user, err := apiCfg.DB.CreateUser(r.Context(), database.CreateUserParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 		Name:      params.Name,
 		Email:     params.Email,
-		Password:  params.Password,
+		Password:  string(utils.HashPassword(params.Password)),
 	})
 
 	if err != nil {
@@ -56,3 +63,5 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	utils.JSONResponse(w, 201, ConvertDatabaseUserToUser(user))
 }
+
+func GetUserByEmail(w http.ResponseWriter, r *http.Request) {}
