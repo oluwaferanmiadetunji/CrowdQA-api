@@ -39,7 +39,7 @@ func main() {
 
 }
 
-func Home(w http.ResponseWriter, r *http.Request) {
+func Home(w http.ResponseWriter, _ *http.Request) {
 	status := utils.Response{
 		Message: "Welcome",
 	}

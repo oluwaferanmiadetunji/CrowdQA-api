@@ -54,7 +54,5 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(ConvertDatabaseUserToUser(user))
-
-	utils.JSONResponse(w, 201, "HO")
+	utils.JSONResponse(w, 201, ConvertDatabaseUserToUser(user))
 }

@@ -12,16 +12,15 @@ services:
     restart: on-failure
     volumes:
       - ./:/app
-    env_file: .env
-    networks:
-      - crowd-qa-api
+    
+    environment:
+      - DB_URL=postgres://postgres:@db:5432/crowdQA?sslmode=disable
+    
     
   db:
     image: postgres
     container_name: db
     restart: always
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: crowdQA
