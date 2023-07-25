@@ -3,21 +3,27 @@ package users
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/google/uuid"
+	"github.com/ichtrojan/thoth"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/db"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/internal/database"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/internal/utils"
 )
 
 var (
-	apiCfg = db.Database()
+	apiCfg    = db.Database()
+	logger, _ = thoth.Init("log")
 )
 
 func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
-		Name string `name`
+		Name     string `json:"name"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
@@ -26,16 +32,29 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(&params)
 
 	if err != nil {
-		utils.ErrorResponse(w, 400, fmt.Sprintf("Error parsing data %v", err))
+		logger.Log(fmt.Errorf("error parsing data %v", err))
+		log.Printf("error parsing data: %v", err)
+		utils.ErrorResponse(w, 400, "Error creating account, please try again")
+		return
 	}
 
-	apiCfg.DB.CreateUser(r.Context(), database.CreateUserParams{
-		ID: uuid.New(),
+	user, err := apiCfg.DB.CreateUser(r.Context(), database.CreateUserParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+		Name:      params.Name,
+		Email:     params.Email,
+		Password:  params.Password,
 	})
 
-	status := utils.Response{
-		Message: "Welcome",
+	if err != nil {
+		logger.Log(fmt.Errorf("error creating account %v", err))
+		log.Printf("error creating account: %v", err)
+		utils.ErrorResponse(w, 400, ("Error creating account, please try again"))
+		return
 	}
 
-	utils.JSONResponse(w, 200, status)
+	fmt.Println(ConvertDatabaseUserToUser(user))
+
+	utils.JSONResponse(w, 201, "HO")
 }

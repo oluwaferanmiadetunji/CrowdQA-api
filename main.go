@@ -30,9 +30,9 @@ func main() {
 	}
 
 	route := mux.NewRouter()
-	users.UserRoutes(route)
 
 	route.HandleFunc("/", Home).Methods("GET")
+	users.UserRoutes(route)
 
 	log.Printf("Server starting on port: %v", port)
 	http.ListenAndServe(":"+port, route)

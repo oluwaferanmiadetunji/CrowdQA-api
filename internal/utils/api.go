@@ -36,4 +36,5 @@ func ErrorResponse(w http.ResponseWriter, code int, message string) {
 	JSONResponse(w, code, errResponse{
 		Error: message,
 	})
+
 }

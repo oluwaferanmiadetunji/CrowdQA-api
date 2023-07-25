@@ -7,12 +7,19 @@ import (
 	"os"
 
 	"github.com/ichtrojan/thoth"
+	"github.com/joho/godotenv"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/config"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/internal/database"
 )
 
 func Database() config.ApiConfig {
 	logger, _ := thoth.Init("log")
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+		logger.Log(errors.New("no .env file found"))
+	}
 
 	dbURL, exist := os.LookupEnv("DB_URL")
 

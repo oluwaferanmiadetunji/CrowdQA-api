@@ -5,23 +5,50 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-
+    depends_on:
+      - db
     ports: 
       - 4040:4040 
     restart: on-failure
     volumes:
       - ./:/app
     env_file: .env
-    
     networks:
       - crowd-qa-api
     
-  
+  db:
+    image: postgres
+    container_name: db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: crowdQA
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - local_pgdata:/var/lib/postgresql/data
+      - ./db/schema:/db/schema
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    
 
 volumes:
-  api:            
-             
+  api:   
+  local_pgdata:
+  pgadmin-data:       
 
 networks:
   crowd-qa-api:
     driver: bridge
+    
