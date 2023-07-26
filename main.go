@@ -10,8 +10,10 @@ import (
 	"github.com/ichtrojan/thoth"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"github.com/oluwaferanmiadetunji/CrowdQA-api/api/auth"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/api/users"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/internal/utils"
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -31,11 +33,19 @@ func main() {
 
 	route := mux.NewRouter()
 
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: true,
+	})
+
 	route.HandleFunc("/", Home).Methods("GET")
 	users.UserRoutes(route)
+	auth.AuthRoutes(route)
+
+	handler := c.Handler(route)
 
 	log.Printf("Server starting on port: %v", port)
-	http.ListenAndServe(":"+port, route)
+	http.ListenAndServe(":"+port, handler)
 
 }
 

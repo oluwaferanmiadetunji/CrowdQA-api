@@ -38,3 +38,15 @@ func ErrorResponse(w http.ResponseWriter, code int, message string) {
 	})
 
 }
+
+type ReturnTokenResponseStruct struct {
+	Token string `json:"token"`
+	User  User   `json:"user"`
+}
+
+func ReturnTokenResponse(token string, user User) ReturnTokenResponseStruct {
+	return ReturnTokenResponseStruct{
+		Token: token,
+		User:  user,
+	}
+}

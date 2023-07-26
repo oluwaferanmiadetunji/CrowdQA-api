@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/ichtrojan/thoth"
+	"github.com/oluwaferanmiadetunji/CrowdQA-api/api/auth"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/db"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/internal/database"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/internal/utils"
@@ -61,7 +62,16 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.JSONResponse(w, 201, ConvertDatabaseUserToUser(user))
+	token, err := auth.GenerateJWTToken(existingUser)
+
+	if err != nil {
+		logger.Log(fmt.Errorf("error generating token %v", err))
+		log.Printf("error generating token: %v", err)
+		utils.ErrorResponse(w, 400, "Error logging in, please try again")
+		return
+	}
+
+	utils.JSONResponse(w, 201, utils.ReturnTokenResponse(token, utils.ConvertDatabaseUserToUser(user)))
 }
 
 func GetUserByEmail(w http.ResponseWriter, r *http.Request) {}
