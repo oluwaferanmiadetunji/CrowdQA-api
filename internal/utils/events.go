@@ -24,3 +24,13 @@ func ConvertDatabaseEventToEvent(dbEvent database.Event) Event {
 		EndDate:   dbEvent.EndDate,
 	}
 }
+
+func ConvertDatabaseEventsToEvents(dbEvents []database.Event) []Event {
+	events := []Event{}
+
+	for _, dbEvent := range dbEvents {
+		events = append(events, ConvertDatabaseEventToEvent(dbEvent))
+	}
+
+	return events
+}

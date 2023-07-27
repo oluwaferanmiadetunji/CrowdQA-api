@@ -55,6 +55,19 @@ func CreateEvents(w http.ResponseWriter, r *http.Request, user database.User) {
 		return
 	}
 
-	utils.JSONResponse(w, 200, utils.ConvertDatabaseEventToEvent(event))
+	utils.JSONResponse(w, 201, utils.ConvertDatabaseEventToEvent(event))
 
+}
+
+func GetMyEvents(w http.ResponseWriter, r *http.Request, user database.User) {
+	events, err := apiCfg.DB.GetMyEvents(r.Context(), user.ID)
+
+	if err != nil {
+		logger.Log(fmt.Errorf("error fetching events %v", err))
+		log.Printf("error fetching events: %v", err)
+		utils.ErrorResponse(w, 400, ("Error fetching events, please try again"))
+		return
+	}
+
+	utils.JSONResponse(w, 200, utils.ConvertDatabaseEventsToEvents(events))
 }
