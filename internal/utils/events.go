@@ -13,6 +13,7 @@ type Event struct {
 	Name      string    `json:"name"`
 	StartDate time.Time `json:"start_date"`
 	EndDate   time.Time `json:"end_date"`
+	EventCode int       `json:"event_code"`
 }
 
 func ConvertDatabaseEventToEvent(dbEvent database.Event) Event {
@@ -22,6 +23,7 @@ func ConvertDatabaseEventToEvent(dbEvent database.Event) Event {
 		Name:      dbEvent.Name,
 		StartDate: dbEvent.StartDate,
 		EndDate:   dbEvent.EndDate,
+		EventCode: int(dbEvent.EventCode),
 	}
 }
 

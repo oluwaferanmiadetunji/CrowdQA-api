@@ -18,6 +18,7 @@ type Event struct {
 	StartDate time.Time `json:"start_date"`
 	EndDate   time.Time `json:"end_date"`
 	UserID    uuid.UUID `json:"user_id"`
+	EventCode int32     `json:"event_code"`
 }
 
 type User struct {

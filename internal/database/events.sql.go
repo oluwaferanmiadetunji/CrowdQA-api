@@ -13,9 +13,9 @@ import (
 )
 
 const createEvent = `-- name: CreateEvent :one
-INSERT INTO events (id, created_at, updated_at, name, start_date, end_date, user_id)
-VALUES ($1, $2, $3, $4, $5, $6, $7)
-RETURNING id, created_at, updated_at, name, start_date, end_date, user_id
+INSERT INTO events (id, created_at, updated_at, name, start_date, end_date, user_id, event_code)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+RETURNING id, created_at, updated_at, name, start_date, end_date, user_id, event_code
 `
 
 type CreateEventParams struct {
@@ -26,6 +26,7 @@ type CreateEventParams struct {
 	StartDate time.Time `json:"start_date"`
 	EndDate   time.Time `json:"end_date"`
 	UserID    uuid.UUID `json:"user_id"`
+	EventCode int32     `json:"event_code"`
 }
 
 func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) (Event, error) {
@@ -37,6 +38,7 @@ func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) (Event
 		arg.StartDate,
 		arg.EndDate,
 		arg.UserID,
+		arg.EventCode,
 	)
 	var i Event
 	err := row.Scan(
@@ -47,12 +49,33 @@ func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) (Event
 		&i.StartDate,
 		&i.EndDate,
 		&i.UserID,
+		&i.EventCode,
+	)
+	return i, err
+}
+
+const getEventByEventCode = `-- name: GetEventByEventCode :one
+SELECT id, created_at, updated_at, name, start_date, end_date, user_id, event_code FROM events WHERE event_code = $1
+`
+
+func (q *Queries) GetEventByEventCode(ctx context.Context, eventCode int32) (Event, error) {
+	row := q.db.QueryRowContext(ctx, getEventByEventCode, eventCode)
+	var i Event
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Name,
+		&i.StartDate,
+		&i.EndDate,
+		&i.UserID,
+		&i.EventCode,
 	)
 	return i, err
 }
 
 const getEventById = `-- name: GetEventById :one
-SELECT id, created_at, updated_at, name, start_date, end_date, user_id FROM events WHERE id = $1
+SELECT id, created_at, updated_at, name, start_date, end_date, user_id, event_code FROM events WHERE id = $1
 `
 
 func (q *Queries) GetEventById(ctx context.Context, id uuid.UUID) (Event, error) {
@@ -66,12 +89,13 @@ func (q *Queries) GetEventById(ctx context.Context, id uuid.UUID) (Event, error)
 		&i.StartDate,
 		&i.EndDate,
 		&i.UserID,
+		&i.EventCode,
 	)
 	return i, err
 }
 
 const getMyEvents = `-- name: GetMyEvents :many
-SELECT id, created_at, updated_at, name, start_date, end_date, user_id FROM events WHERE user_id = $1
+SELECT id, created_at, updated_at, name, start_date, end_date, user_id, event_code FROM events WHERE user_id = $1
 `
 
 func (q *Queries) GetMyEvents(ctx context.Context, userID uuid.UUID) ([]Event, error) {
@@ -91,6 +115,7 @@ func (q *Queries) GetMyEvents(ctx context.Context, userID uuid.UUID) ([]Event, e
 			&i.StartDate,
 			&i.EndDate,
 			&i.UserID,
+			&i.EventCode,
 		); err != nil {
 			return nil, err
 		}

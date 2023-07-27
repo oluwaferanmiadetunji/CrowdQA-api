@@ -38,6 +38,15 @@ func CreateEvents(w http.ResponseWriter, r *http.Request, user database.User) {
 		return
 	}
 
+	event_code, err := utils.GenerateEventCode()
+
+	if err != nil {
+		logger.Log(fmt.Errorf("error generating event code %v", err))
+		log.Printf("error generating event code: %v", err)
+		utils.ErrorResponse(w, 400, "Error creating event, please try again")
+		return
+	}
+
 	event, err := apiCfg.DB.CreateEvent(r.Context(), database.CreateEventParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
@@ -46,6 +55,7 @@ func CreateEvents(w http.ResponseWriter, r *http.Request, user database.User) {
 		StartDate: utils.ConvertStringToTime(params.StartDate),
 		EndDate:   utils.ConvertStringToTime(params.EndDate),
 		UserID:    user.ID,
+		EventCode: event_code,
 	})
 
 	if err != nil {

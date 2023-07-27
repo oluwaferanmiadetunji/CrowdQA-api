@@ -7,8 +7,9 @@ CREATE TABLE events (
     start_date TIMESTAMP NOT NULL,
     end_date TIMESTAMP NOT NULL,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    event_code INT NOT NULL UNIQUE,
     PRIMARY KEY(id)
 ); 
 
 -- +goose Down
-DROP TABLE events;
+DROP TABLE IF EXISTS events;
