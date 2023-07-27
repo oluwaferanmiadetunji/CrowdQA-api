@@ -52,7 +52,7 @@ func GenerateTokenHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := GenerateJWTToken(existingUser)
+	token, err := utils.GenerateJWTToken(existingUser)
 
 	if err != nil {
 		logger.Log(fmt.Errorf("error generating token %v", err))

@@ -9,7 +9,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/ichtrojan/thoth"
-	"github.com/oluwaferanmiadetunji/CrowdQA-api/api/auth"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/db"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/internal/database"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/internal/utils"
@@ -62,7 +61,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := auth.GenerateJWTToken(existingUser)
+	token, err := utils.GenerateJWTToken(existingUser)
 
 	if err != nil {
 		logger.Log(fmt.Errorf("error generating token %v", err))

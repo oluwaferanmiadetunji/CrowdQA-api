@@ -11,6 +11,7 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/api/auth"
+	"github.com/oluwaferanmiadetunji/CrowdQA-api/api/events"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/api/users"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/internal/utils"
 	"github.com/rs/cors"
@@ -41,6 +42,7 @@ func main() {
 	route.HandleFunc("/", Home).Methods("GET")
 	users.UserRoutes(route)
 	auth.AuthRoutes(route)
+	events.EventRoutes(route)
 
 	handler := c.Handler(route)
 
