@@ -18,7 +18,7 @@ func ConvertDatabaseUserToUser(dbUser database.User) User {
 	return User{
 		ID:        dbUser.ID,
 		CreatedAt: dbUser.CreatedAt,
-		Name:  dbUser.Name,
-		Email: dbUser.Email,
+		Name:      dbUser.Name,
+		Email:     dbUser.Email,
 	}
 }

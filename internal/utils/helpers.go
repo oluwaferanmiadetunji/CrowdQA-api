@@ -3,11 +3,11 @@ package utils
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/ichtrojan/thoth"
 	"golang.org/x/crypto/bcrypt"
 )
-
 
 func HashPassword(password string) []byte {
 	logger, _ := thoth.Init("log")
@@ -32,4 +32,9 @@ func ComparePasswordHash(hashedPassword string, password []byte) bool {
 	}
 
 	return true
+}
+
+func ConvertStringToTime(date string) time.Time {
+	parsedTime, _ := time.Parse(time.RFC3339, date)
+	return parsedTime
 }

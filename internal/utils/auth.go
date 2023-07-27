@@ -4,22 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 	"github.com/ichtrojan/thoth"
 	"github.com/joho/godotenv"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/internal/database"
 )
-
-var (
-	logger, _ = thoth.Init("log")
-)
-
-const jwtContextKey = "user"
 
 func TokenExpirationTime() int64 {
 	time := time.Now().Add(1440 * time.Minute).Unix()
@@ -103,20 +95,4 @@ func VerifyJWTToken(tokenString string) (bool, string, error) {
 	}
 
 	return false, "", fmt.Errorf("invalid token")
-}
-
-func HandleNoUserIDResponse(w http.ResponseWriter, r *http.Request) uuid.UUID {
-	userID, ok := r.Context().Value(jwtContextKey).(string)
-
-	if !ok {
-		logger.Log(fmt.Errorf("user ID not found in context"))
-		log.Printf("User ID not found in context")
-		// If the userID is not found in the context or is of a different type, return an error response.
-		ErrorResponse(w, 500, "Unauthorised request")
-		panic("")
-	}
-
-	id, _ := uuid.Parse(userID)
-
-	return id
 }

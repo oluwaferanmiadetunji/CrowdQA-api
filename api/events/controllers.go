@@ -1,12 +1,16 @@
 package events
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/ichtrojan/thoth"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/db"
+	"github.com/oluwaferanmiadetunji/CrowdQA-api/internal/database"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/internal/utils"
 )
 
@@ -15,18 +19,42 @@ var (
 	logger, _ = thoth.Init("log")
 )
 
-func CreateEvents(w http.ResponseWriter, r *http.Request) {
-	userID := utils.HandleNoUserIDResponse(w, r)
+func CreateEvents(w http.ResponseWriter, r *http.Request, user database.User) {
+	type parameters struct {
+		Name      string `json:"name"`
+		StartDate string `json:"start_date"`
+		EndDate   string `json:"end_date"`
+	}
 
-	existingUser, _ := apiCfg.DB.GetUserById(r.Context(), userID)
+	decoder := json.NewDecoder(r.Body)
+	params := parameters{}
 
-	if existingUser.Email == "" {
-		logger.Log(fmt.Errorf("account does not exist "))
-		log.Printf("account does not exist")
-		utils.ErrorResponse(w, 404, "Unauthorised request!")
+	err := decoder.Decode(&params)
+
+	if err != nil {
+		logger.Log(fmt.Errorf("error parsing data %v", err))
+		log.Printf("error parsing data: %v", err)
+		utils.ErrorResponse(w, 400, "Error creating event, please try again")
 		return
 	}
 
-	utils.JSONResponse(w, 200, existingUser)
+	event, err := apiCfg.DB.CreateEvent(r.Context(), database.CreateEventParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+		Name:      params.Name,
+		StartDate: utils.ConvertStringToTime(params.StartDate),
+		EndDate:   utils.ConvertStringToTime(params.EndDate),
+		UserID:    user.ID,
+	})
+
+	if err != nil {
+		logger.Log(fmt.Errorf("error creating event %v", err))
+		log.Printf("error creating event: %v", err)
+		utils.ErrorResponse(w, 400, ("Error creating event, please try again"))
+		return
+	}
+
+	utils.JSONResponse(w, 200, utils.ConvertDatabaseEventToEvent(event))
 
 }
