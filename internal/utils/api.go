@@ -23,6 +23,9 @@ func JSONResponse(w http.ResponseWriter, code int, payload interface{}) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Max-Age", "15")
+
 
 	w.WriteHeader(code)
 	w.Write(data)

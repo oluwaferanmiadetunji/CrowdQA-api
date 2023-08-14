@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/ichtrojan/thoth"
 	"github.com/joho/godotenv"
@@ -14,7 +15,6 @@ import (
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/api/events"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/api/users"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/internal/utils"
-	"github.com/rs/cors"
 )
 
 func main() {
@@ -34,20 +34,20 @@ func main() {
 
 	route := mux.NewRouter()
 
-	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},
-		AllowCredentials: true,
-	})
-
 	route.HandleFunc("/", Home).Methods("GET")
+
 	users.UserRoutes(route)
 	auth.AuthRoutes(route)
 	events.EventRoutes(route)
 
-	handler := c.Handler(route)
+	// handler := c.Handler(route)
 
 	log.Printf("Server starting on port: %v", port)
-	http.ListenAndServe(":"+port, handler)
+	http.ListenAndServe(":"+port, handlers.CORS(
+		handlers.AllowedOrigins([]string{"*"}),
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
+		handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
+	)(route))
 
 }
 

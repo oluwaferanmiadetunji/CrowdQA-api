@@ -16,6 +16,7 @@ type Querier interface {
 	GetEventByEventCode(ctx context.Context, eventCode int32) (Event, error)
 	GetEventById(ctx context.Context, id uuid.UUID) (Event, error)
 	GetMyEvents(ctx context.Context, userID uuid.UUID) ([]Event, error)
+	GetUpcomingEvents(ctx context.Context, arg GetUpcomingEventsParams) ([]Event, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserById(ctx context.Context, id uuid.UUID) (User, error)
 }

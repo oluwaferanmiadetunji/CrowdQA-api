@@ -8,4 +8,5 @@ import (
 func EventRoutes(r *mux.Router) {
 	r.HandleFunc("/events", middleware.AuthMiddleware(CreateEvents)).Methods("POST")
 	r.HandleFunc("/events", middleware.AuthMiddleware(GetMyEvents)).Methods("GET")
+	r.HandleFunc("/events/upcoming", middleware.AuthMiddleware(GetMyUpcomingEvents)).Methods("GET")
 }

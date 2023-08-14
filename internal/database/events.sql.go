@@ -129,3 +129,44 @@ func (q *Queries) GetMyEvents(ctx context.Context, userID uuid.UUID) ([]Event, e
 	}
 	return items, nil
 }
+
+const getUpcomingEvents = `-- name: GetUpcomingEvents :many
+SELECT id, created_at, updated_at, name, start_date, end_date, user_id, event_code FROM events WHERE user_id = $1 AND end_date >= CURRENT_DATE ORDER BY start_date LIMIT 10 OFFSET $2
+`
+
+type GetUpcomingEventsParams struct {
+	UserID uuid.UUID `json:"user_id"`
+	Offset int32     `json:"offset"`
+}
+
+func (q *Queries) GetUpcomingEvents(ctx context.Context, arg GetUpcomingEventsParams) ([]Event, error) {
+	rows, err := q.db.QueryContext(ctx, getUpcomingEvents, arg.UserID, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Event{}
+	for rows.Next() {
+		var i Event
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Name,
+			&i.StartDate,
+			&i.EndDate,
+			&i.UserID,
+			&i.EventCode,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
