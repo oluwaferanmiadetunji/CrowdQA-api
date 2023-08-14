@@ -137,7 +137,7 @@ func SeedEvents(w http.ResponseWriter, r *http.Request, user database.User) {
 			ID:        uuid.New(),
 			CreatedAt: time.Now().UTC(),
 			UpdatedAt: time.Now().UTC(),
-			Name:      params.Name,
+			Name:      "params.Name",
 			StartDate: startDate,
 			EndDate:   endDate,
 			UserID:    user.ID,
@@ -150,6 +150,8 @@ func SeedEvents(w http.ResponseWriter, r *http.Request, user database.User) {
 			utils.ErrorResponse(w, 400, ("Error creating event, please try again"))
 			return
 		}
+
+		fmt.Printf(event.Name)
 	}
 
 	utils.JSONResponse(w, 201, "Event seeded successfully")

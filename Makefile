@@ -27,5 +27,13 @@ generate:
 migrate:
 	goose postgres postgres://postgres:@localhost:5432/crowdQA up
 
+# Seed users 
+seed-users:
+	cd cmd/seeder && go build -o ../../seeder && cd ../.. && ./seeder -seed=user && rm seeder
+
+# Seed events 
+seed-events:
+	cd cmd/seeder && go build -o seeder && ./seeder -seed=event -user_id=$(user_id)
+
 # Default target (this will be executed if you just run "make" without a command)
-default: install
+default: run

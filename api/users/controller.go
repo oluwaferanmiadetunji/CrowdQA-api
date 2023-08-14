@@ -5,12 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 
-	"github.com/google/uuid"
 	"github.com/ichtrojan/thoth"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/db"
-	"github.com/oluwaferanmiadetunji/CrowdQA-api/internal/database"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/internal/utils"
 )
 
@@ -19,15 +16,16 @@ var (
 	logger, _ = thoth.Init("log")
 )
 
+type UserParameters struct {
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
-	type parameters struct {
-		Name     string `json:"name"`
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
 
 	decoder := json.NewDecoder(r.Body)
-	params := parameters{}
+	params := UserParameters{}
 
 	err := decoder.Decode(&params)
 
@@ -45,14 +43,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := apiCfg.DB.CreateUser(r.Context(), database.CreateUserParams{
-		ID:        uuid.New(),
-		CreatedAt: time.Now().UTC(),
-		UpdatedAt: time.Now().UTC(),
-		Name:      params.Name,
-		Email:     params.Email,
-		Password:  string(utils.HashPassword(params.Password)),
-	})
+	user, err := SaveUserToDb(params)
 
 	if err != nil {
 		logger.Log(fmt.Errorf("error creating account %v", err))
@@ -70,7 +61,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.JSONResponse(w, 201, utils.ReturnTokenResponse(token, utils.ConvertDatabaseUserToUser(user)))
+	utils.JSONResponse(w, 201, utils.ReturnTokenResponse(token, utils.ConvertDatabaseUserToUser(*user)))
 }
 
 func GetUserByEmail(w http.ResponseWriter, r *http.Request) {}
