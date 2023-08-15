@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 type Response struct {
@@ -54,9 +55,35 @@ func ReturnTokenResponse(token string, user User) ReturnTokenResponseStruct {
 }
 
 type APIQueryResponseStruct struct {
-	Data  interface{} `json:"data"`
-	Count int64       `json:"count"`
-	CurrentPage int32 `json:"page"`
-	TotalPages  int64 `json:"total_pages"`
-	Limit       int64 `json:"limit"`
+	Data        interface{} `json:"data"`
+	Count       int64       `json:"count"`
+	CurrentPage int32       `json:"page"`
+	TotalPages  int64       `json:"total_pages"`
+	Limit       int64       `json:"limit"`
+}
+
+func GetQueryOffset(r *http.Request) (int32, int32) {
+	pageStr := r.URL.Query().Get("page")
+
+	var page int32
+	var offset int32
+
+	if pageStr != "" {
+		parsedPage, err := strconv.ParseInt(pageStr, 10, 32)
+		if err != nil {
+			page = 0
+		} else {
+			page = int32(parsedPage)
+		}
+	} else {
+		page = 0
+	}
+
+	if page == 0 {
+		offset = 0
+	} else {
+		offset = page * 10
+	}
+
+	return page, offset
 }

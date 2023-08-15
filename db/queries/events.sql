@@ -7,7 +7,10 @@ RETURNING *;
 SELECT * FROM events WHERE id = $1;
 
 -- name: GetMyEvents :many
-SELECT * FROM events WHERE user_id = $1 ORDER BY start_date;
+SELECT * FROM events WHERE user_id = $1 AND end_date < CURRENT_DATE ORDER BY start_date LIMIT 10 OFFSET $2;
+
+-- name: GetMyEventsCount :one
+SELECT COUNT(*) FROM events WHERE user_id = $1 AND end_date < CURRENT_DATE;
 
 -- name: GetEventByEventCode :one
 SELECT * FROM events WHERE event_code = $1;

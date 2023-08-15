@@ -95,11 +95,16 @@ func (q *Queries) GetEventById(ctx context.Context, id uuid.UUID) (Event, error)
 }
 
 const getMyEvents = `-- name: GetMyEvents :many
-SELECT id, created_at, updated_at, name, start_date, end_date, user_id, event_code FROM events WHERE user_id = $1 ORDER BY start_date
+SELECT id, created_at, updated_at, name, start_date, end_date, user_id, event_code FROM events WHERE user_id = $1 AND end_date < CURRENT_DATE ORDER BY start_date LIMIT 10 OFFSET $2
 `
 
-func (q *Queries) GetMyEvents(ctx context.Context, userID uuid.UUID) ([]Event, error) {
-	rows, err := q.db.QueryContext(ctx, getMyEvents, userID)
+type GetMyEventsParams struct {
+	UserID uuid.UUID `json:"user_id"`
+	Offset int32     `json:"offset"`
+}
+
+func (q *Queries) GetMyEvents(ctx context.Context, arg GetMyEventsParams) ([]Event, error) {
+	rows, err := q.db.QueryContext(ctx, getMyEvents, arg.UserID, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -128,6 +133,17 @@ func (q *Queries) GetMyEvents(ctx context.Context, userID uuid.UUID) ([]Event, e
 		return nil, err
 	}
 	return items, nil
+}
+
+const getMyEventsCount = `-- name: GetMyEventsCount :one
+SELECT COUNT(*) FROM events WHERE user_id = $1 AND end_date < CURRENT_DATE
+`
+
+func (q *Queries) GetMyEventsCount(ctx context.Context, userID uuid.UUID) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getMyEventsCount, userID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
 }
 
 const getUpComingEventsCount = `-- name: GetUpComingEventsCount :one
