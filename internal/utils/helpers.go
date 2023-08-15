@@ -63,3 +63,17 @@ func GenerateEventCode() (int32, error) {
 	// Return the big integer as an integer
 	return int32(randomInt.Int64()), nil
 }
+
+func GetNumberOfPagesFromCount(count int64) int64 {
+	var limit int64 = 10
+
+	division := count / limit
+
+	modulus := count % limit
+
+	if modulus > 0 {
+		division++
+	}
+
+	return division
+}

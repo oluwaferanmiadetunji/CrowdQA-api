@@ -33,7 +33,7 @@ seed-users:
 
 # Seed events 
 seed-events:
-	cd cmd/seeder && go build -o seeder && ./seeder -seed=event -user_id=$(user_id)
+	cd cmd/seeder && go build -o ../../seeder && cd ../.. && ./seeder -seed=event -user_id=$(user_id) && rm seeder
 
 # Default target (this will be executed if you just run "make" without a command)
 default: run

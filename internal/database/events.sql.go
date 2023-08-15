@@ -95,7 +95,7 @@ func (q *Queries) GetEventById(ctx context.Context, id uuid.UUID) (Event, error)
 }
 
 const getMyEvents = `-- name: GetMyEvents :many
-SELECT id, created_at, updated_at, name, start_date, end_date, user_id, event_code FROM events WHERE user_id = $1
+SELECT id, created_at, updated_at, name, start_date, end_date, user_id, event_code FROM events WHERE user_id = $1 ORDER BY start_date
 `
 
 func (q *Queries) GetMyEvents(ctx context.Context, userID uuid.UUID) ([]Event, error) {
@@ -128,6 +128,17 @@ func (q *Queries) GetMyEvents(ctx context.Context, userID uuid.UUID) ([]Event, e
 		return nil, err
 	}
 	return items, nil
+}
+
+const getUpComingEventsCount = `-- name: GetUpComingEventsCount :one
+SELECT COUNT(*) FROM events WHERE user_id = $1 AND end_date >= CURRENT_DATE
+`
+
+func (q *Queries) GetUpComingEventsCount(ctx context.Context, userID uuid.UUID) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getUpComingEventsCount, userID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
 }
 
 const getUpcomingEvents = `-- name: GetUpcomingEvents :many

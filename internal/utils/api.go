@@ -24,8 +24,7 @@ func JSONResponse(w http.ResponseWriter, code int, payload interface{}) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Max-Age", "15")
-
+	w.Header().Set("Access-Control-Max-Age", "15")
 
 	w.WriteHeader(code)
 	w.Write(data)
@@ -52,4 +51,12 @@ func ReturnTokenResponse(token string, user User) ReturnTokenResponseStruct {
 		Token: token,
 		User:  user,
 	}
+}
+
+type APIQueryResponseStruct struct {
+	Data  interface{} `json:"data"`
+	Count int64       `json:"count"`
+	CurrentPage int32 `json:"page"`
+	TotalPages  int64 `json:"total_pages"`
+	Limit       int64 `json:"limit"`
 }
