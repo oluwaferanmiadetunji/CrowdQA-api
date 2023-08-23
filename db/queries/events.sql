@@ -21,3 +21,5 @@ SELECT * FROM events WHERE user_id = $1 AND end_date >= CURRENT_DATE ORDER BY st
 -- name: GetUpComingEventsCount :one
 SELECT COUNT(*) FROM events WHERE user_id = $1 AND end_date >= CURRENT_DATE;
 
+-- name: DeleteEvent :exec
+DELETE FROM events WHERE id = $1 AND user_id = $2;

@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"github.com/ichtrojan/thoth"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/db"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/internal/database"
@@ -115,6 +117,36 @@ func GetMyUpcomingEvents(w http.ResponseWriter, r *http.Request, user database.U
 		CurrentPage: page + 1,
 		TotalPages:  utils.GetNumberOfPagesFromCount(eventCount),
 		Limit:       10,
+	}
+
+	utils.JSONResponse(w, 200, response)
+}
+
+func DeleteEvent(w http.ResponseWriter, r *http.Request, user database.User) {
+	params := mux.Vars(r)
+	eventId := params["id"]
+
+	parsedEventId, err := uuid.Parse(eventId)
+
+	if err != nil {
+		fmt.Println("Error parsing UUID:", err)
+		return
+	}
+
+	err = apiCfg.DB.DeleteEvent(r.Context(), database.DeleteEventParams{
+		ID:     parsedEventId,
+		UserID: user.ID,
+	})
+
+	if err != nil {
+		logger.Log(fmt.Errorf("error deleting event %v", err))
+		log.Printf("error deleting event: %v", err)
+		utils.ErrorResponse(w, 400, ("Error deleting event, please try again"))
+		return
+	}
+
+	response := utils.Response{
+		Message: "Event deleted",
 	}
 
 	utils.JSONResponse(w, 200, response)
