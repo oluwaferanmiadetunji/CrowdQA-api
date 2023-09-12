@@ -25,7 +25,7 @@ generate:
 
 # Run DB migrations 
 migrate:
-	goose postgres postgres://postgres:@localhost:5432/crowdQA up
+	cd db/migrations && goose postgres postgres://postgres:@localhost:5432/crowdQA up
 
 # Seed users 
 seed-users:

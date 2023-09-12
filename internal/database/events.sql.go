@@ -89,11 +89,16 @@ func (q *Queries) GetEventByEventCode(ctx context.Context, eventCode int32) (Eve
 }
 
 const getEventById = `-- name: GetEventById :one
-SELECT id, created_at, updated_at, name, start_date, end_date, user_id, event_code FROM events WHERE id = $1
+SELECT id, created_at, updated_at, name, start_date, end_date, user_id, event_code FROM events WHERE id = $1 AND user_id = $2
 `
 
-func (q *Queries) GetEventById(ctx context.Context, id uuid.UUID) (Event, error) {
-	row := q.db.QueryRowContext(ctx, getEventById, id)
+type GetEventByIdParams struct {
+	ID     uuid.UUID `json:"id"`
+	UserID uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) GetEventById(ctx context.Context, arg GetEventByIdParams) (Event, error) {
+	row := q.db.QueryRowContext(ctx, getEventById, arg.ID, arg.UserID)
 	var i Event
 	err := row.Scan(
 		&i.ID,

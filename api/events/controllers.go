@@ -151,3 +151,29 @@ func DeleteEvent(w http.ResponseWriter, r *http.Request, user database.User) {
 
 	utils.JSONResponse(w, 200, response)
 }
+
+func GetMyEventById(w http.ResponseWriter, r *http.Request, user database.User) {
+	params := mux.Vars(r)
+	eventId := params["id"]
+
+	parsedEventId, err := uuid.Parse(eventId)
+
+	if err != nil {
+		fmt.Println("Error parsing UUID:", err)
+		return
+	}
+
+	event, err := apiCfg.DB.GetEventById(r.Context(), database.GetEventByIdParams{
+		ID:     parsedEventId,
+		UserID: user.ID,
+	})
+
+	if err != nil {
+		logger.Log(fmt.Errorf("error fetching event %v", err))
+		log.Printf("error fetching event: %v", err)
+		utils.ErrorResponse(w, 400, ("Error fetching event, please try again"))
+		return
+	}
+
+	utils.JSONResponse(w, 201, utils.ConvertDatabaseEventToEvent(event))
+}

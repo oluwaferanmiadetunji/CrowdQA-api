@@ -15,7 +15,7 @@ type Querier interface {
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteEvent(ctx context.Context, arg DeleteEventParams) error
 	GetEventByEventCode(ctx context.Context, eventCode int32) (Event, error)
-	GetEventById(ctx context.Context, id uuid.UUID) (Event, error)
+	GetEventById(ctx context.Context, arg GetEventByIdParams) (Event, error)
 	GetMyEvents(ctx context.Context, arg GetMyEventsParams) ([]Event, error)
 	GetMyEventsCount(ctx context.Context, userID uuid.UUID) (int64, error)
 	GetUpComingEventsCount(ctx context.Context, userID uuid.UUID) (int64, error)
