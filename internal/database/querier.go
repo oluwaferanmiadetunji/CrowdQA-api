@@ -12,12 +12,18 @@ import (
 
 type Querier interface {
 	CreateEvent(ctx context.Context, arg CreateEventParams) (Event, error)
+	CreatePoll(ctx context.Context, arg CreatePollParams) (Poll, error)
+	CreatePollOptions(ctx context.Context, arg CreatePollOptionsParams) (PollOption, error)
+	CreatePollResponse(ctx context.Context, arg CreatePollResponseParams) (PollResponse, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteEvent(ctx context.Context, arg DeleteEventParams) error
 	GetEventByEventCode(ctx context.Context, eventCode int32) (Event, error)
 	GetEventById(ctx context.Context, arg GetEventByIdParams) (Event, error)
 	GetMyEvents(ctx context.Context, arg GetMyEventsParams) ([]Event, error)
 	GetMyEventsCount(ctx context.Context, userID uuid.UUID) (int64, error)
+	GetPollOptionsByPollId(ctx context.Context, pollID uuid.UUID) ([]PollOption, error)
+	GetPollResponsesByPollId(ctx context.Context, pollID uuid.UUID) ([]PollResponse, error)
+	GetPollsByEventId(ctx context.Context, eventID uuid.UUID) ([]Poll, error)
 	GetUpComingEventsCount(ctx context.Context, userID uuid.UUID) (int64, error)
 	GetUpcomingEvents(ctx context.Context, arg GetUpcomingEventsParams) ([]Event, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)

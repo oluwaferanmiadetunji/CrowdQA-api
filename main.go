@@ -13,6 +13,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/api/auth"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/api/events"
+	"github.com/oluwaferanmiadetunji/CrowdQA-api/api/polls"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/api/users"
 	"github.com/oluwaferanmiadetunji/CrowdQA-api/internal/utils"
 )
@@ -39,8 +40,7 @@ func main() {
 	users.UserRoutes(route)
 	auth.AuthRoutes(route)
 	events.EventRoutes(route)
-
-	// handler := c.Handler(route)
+	polls.PollRoutes(route)
 
 	log.Printf("Server starting on port: %v", port)
 	http.ListenAndServe(":"+port, handlers.CORS(
@@ -57,5 +57,4 @@ func Home(w http.ResponseWriter, _ *http.Request) {
 	}
 
 	utils.JSONResponse(w, 200, status)
-
 }

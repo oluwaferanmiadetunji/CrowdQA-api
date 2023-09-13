@@ -25,8 +25,14 @@ type EventParameters struct {
 	EndDate   string `json:"end_date"`
 }
 
-func CreateEvents(w http.ResponseWriter, r *http.Request, user database.User) {
+type PollParameters struct {
+	PollQuestion string   `json:"poll_question"`
+	PollType     string   `json:"poll_type"`
+	EndDate      string   `json:"end_date"`
+	PollOptions  []string `json:"poll_options"`
+}
 
+func CreateEvents(w http.ResponseWriter, r *http.Request, user database.User) {
 	decoder := json.NewDecoder(r.Body)
 	params := EventParameters{}
 
@@ -177,3 +183,4 @@ func GetMyEventById(w http.ResponseWriter, r *http.Request, user database.User) 
 
 	utils.JSONResponse(w, 201, utils.ConvertDatabaseEventToEvent(event))
 }
+
